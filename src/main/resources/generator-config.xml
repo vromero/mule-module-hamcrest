@@ -1,0 +1,15 @@
+<matchers>
+
+  <factory class="org.mule.module.hamcrest.message.AnyScopePropertyMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.ExceptionPayloadMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.InboundAttachmentMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.InboundPropertyMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.InvocationPropertyMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.OutboundAttachmentMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.OutboundPropertyMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.PayloadMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.PropertiesMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.PropertyMatcher"/>
+  <factory class="org.mule.module.hamcrest.message.SessionPropertyMatcher"/>
+  
+</matchers>

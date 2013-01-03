@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.mule.modules</groupId>
+	<artifactId>mule-module-hamcrest</artifactId>
+	<packaging>jar</packaging>
+	<name>mule-module-hamcrest</name>
+	<version>1.0-SNAPSHOT</version>
+	<description>Library of matcher objects for Mule ESB.</description>
+	<url>https://github.com/vromero/mule-module-hamcrest</url>
+
+	<developers>
+		<developer>
+			<name>Victor Romero</name>
+			<email>victor.romero@gmail.com</email>
+		</developer>
+	</developers>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/vromero/mule-module-hamcrest/issues</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git:https://vromero@github.com/vromero/mule-module-hamcrest.git</connection>
+		<developerConnection>scm:svn:git://github.com/vromero/mule-module-hamcrest.git</developerConnection>
+	</scm>
+
+	<properties>
+		<muleVersion>3.3.1</muleVersion>
+		<springVersion>3.1.1.RELEASE</springVersion>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-generator</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<!-- Spring Dependencies -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${springVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Mule Dependencies -->
+		<dependency>
+			<groupId>org.mule</groupId>
+			<artifactId>mule-core</artifactId>
+			<version>${muleVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Xml configuration -->
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-spring-config</artifactId>
+			<version>${muleVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Mule Transports -->
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-vm</artifactId>
+			<version>${muleVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Mule Modules -->
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-client</artifactId>
+			<version>${muleVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- for testing -->
+		<dependency>
+			<groupId>org.mule.tests</groupId>
+			<artifactId>mule-tests-functional</artifactId>
+			<version>${muleVersion}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/java/</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>initialize</id>
+						<phase>initialize</phase>
+						<configuration>
+							<target>
+								<mkdir dir="target/generated-sources/java" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<phase>process-classes</phase>
+					</execution>
+				</executions>
+
+				<configuration>
+					<includeProjectDependencies>true</includeProjectDependencies>
+
+					<includePluginDependencies>true</includePluginDependencies>
+
+					<mainClass>org.hamcrest.generator.config.XmlConfigurator</mainClass>
+
+					<arguments>
+						<argument>src/main/resources/generator-config.xml</argument>
+						<argument>src/main/java</argument>
+						<argument>org.mule.module.hamcrest.MessageMatchers</argument>
+						<argument>${project.build.directory}/generated-sources/java</argument>
+					</arguments>
+
+					<sourceRoot>${project.build.directory}/generated-sources/java</sourceRoot>
+				</configuration>
+
+				<dependencies>
+					<dependency>
+						<groupId>org.hamcrest</groupId>
+						<artifactId>hamcrest-generator</artifactId>
+						<version>1.1</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.mule.modules</groupId>
+						<artifactId>mule-module-client</artifactId>
+						<version>${muleVersion}</version>
+					</dependency>
+				</dependencies>
+
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>muleforge-releases</id>
+			<url>https://repository.mulesoft.org/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>muleforge-snapshots</id>
+			<url>https://repository.mulesoft.org/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>mule-deps</id>
+			<name>Mule Dependencies</name>
+			<url>http://dist.codehaus.org/mule/dependencies/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/</url>
+		</repository>
+		<repository>
+			<id>new-mule-forge</id>
+			<name>Mule Forge Dependencies</name>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/releases/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+</project>
