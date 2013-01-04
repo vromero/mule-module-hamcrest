@@ -20,7 +20,8 @@ package org.mule.module.hamcrest.message.example;
 
 import static org.hamcrest.Matchers.*;
 import static org.mule.module.hamcrest.MessageMatchers.*;
-import static org.mule.module.hamcrest.message.InboundAttachmentMatcher.hasInboundAttachment;
+
+import java.awt.Color;
 
 import static org.junit.Assert.assertThat;
 
@@ -29,10 +30,8 @@ import org.junit.Test;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.tck.junit4.FunctionalTestCase;
-import org.mule.tck.testmodels.fruit.Banana;
-import org.mule.tck.testmodels.fruit.Orange;
 
-public class AttachmentTestCase extends FunctionalTestCase
+public class PayloadTestCase extends FunctionalTestCase
 {
 	
 	private MuleMessage message;
@@ -45,24 +44,20 @@ public class AttachmentTestCase extends FunctionalTestCase
 	@Before
 	public void doSetup() throws Exception {
 		message = new DefaultMuleMessage(null, muleContext);
-		Banana banana = new Banana();
-		Orange orange = new Orange();
-    	message.addOutboundAttachment("anInboundAttachment", banana, "application/vnd.mule.banana");
-		message = message.createInboundMessage();
-		message.addOutboundAttachment("anOutboundAttachment", orange, "application/vnd.mule.orange");
+		message.setPayload(Color.BLUE);
 	}
 
 	@Test
-    public void testAttachmentExamples() throws Exception
+    public void testPayloadExamples() throws Exception
     {
-    	// Check if the inbound attachment "anInboundAttachment" exists
-    	assertThat(message, hasInboundAttachment("anInboundAttachment"));
+    	// Checks that the message has a non null payload
+    	assertThat(message, hasPayload());
     	
-    	// Check if the inbound attachment "anInboundAttachment" is an instance of Orange.class
-    	assertThat(message, hasInboundAttachment("anInboundAttachment", is(instanceOf(Banana.class))));
+    	// Checks if the message has a payload that could be RED, GREEN or BLUE
+    	assertThat(message, hasPayload(isOneOf(Color.RED, Color.GREEN, Color.BLUE)));
     	
-    	// Check if the outbound attachment "anOutboundAttachment" is not an instance of Orange.class
-    	assertThat(message, hasOutboundAttachment("anOutboundAttachment", is(not(instanceOf(Banana.class)))));
+    	// Checks if the message has a payload that is exactly the same instance than Color.BLUE
+    	assertThat(message, hasPayload(is(sameInstance(Color.BLUE))));
     }
 	
 }

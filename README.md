@@ -7,7 +7,7 @@ This module provides a library of specialized [Hamcrest](http://code.google.com/
 ## Hamcrest Resources
 * [Official site](http://code.google.com/p/hamcrest/).
 * [Official tutorial](http://code.google.com/p/hamcrest/wiki/Tutorial).
-* [Tutorial] for custom matchers (http://www.planetgeek.ch/2012/03/07/create-your-own-matcher/).
+* [Tutorial](http://www.planetgeek.ch/2012/03/07/create-your-own-matcher/) for custom matchers.
 
 # Installation
 This module is intented to be used as test scoped dependency.
@@ -86,6 +86,19 @@ assertThat(message, hasOutboundAttachment("anOutboundAttachment", is(not(instanc
 ```
 
 ### Payload
+```java
+import static org.hamcrest.Matchers.*;
+import static org.mule.module.hamcrest.MessageMatchers.*;
+
+// Checks that the message has a non null payload
+assertThat(message, hasPayload());
+
+// Checks if the message has a payload that could be RED, GREEN or BLUE
+assertThat(message, hasPayload(isOneOf(Color.RED, Color.GREEN, Color.BLUE)));
+
+// Checks if the message has a payload that is exactly the same instance than Color.BLUE
+assertThat(message, hasPayload(is(sameInstance(Color.BLUE))));
+```
 
 ### ExceptionPayload
 
