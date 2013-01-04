@@ -32,10 +32,17 @@ Add the module as a dependency to your project. This can be done by adding the f
 
 # Usage
 
+# Examples
+
 ## MuleMessage
 
 ### Properties and Variables
 ```java
+import static org.hamcrest.Matchers.*;
+import static org.mule.module.hamcrest.MessageMatchers.*;
+
+// more stuff here
+
 // Check if the property "aPropertyKey" exists in any scope
 assertThat(message, hasPropertyInAnyScope("aPropertyKey"));
 
@@ -62,6 +69,21 @@ assertThat(message, hasInvocationProperty("anInvocationaKey", is(instanceOf(Stri
 ```
 
 ### Attachments
+```java
+import static org.hamcrest.Matchers.*;
+import static org.mule.module.hamcrest.MessageMatchers.*;
+
+// more stuff here
+
+// Check if the inbound attachment "anInboundAttachment" exists
+assertThat(message, hasInboundAttachment("anInboundAttachment"));
+
+// Check if the inbound attachment "anInboundAttachment" is an instance of Orange.class
+assertThat(message, hasInboundAttachment("anInboundAttachment", is(instanceOf(Banana.class))));
+
+// Check if the outbound attachment "anOutboundAttachment" is not an instance of Orange.class
+assertThat(message, hasOutboundAttachment("anOutboundAttachment", is(not(instanceOf(Banana.class)))));
+```
 
 ### Payload
 
