@@ -21,8 +21,6 @@ package org.mule.module.hamcrest.message.example;
 import static org.hamcrest.Matchers.*;
 import static org.mule.module.hamcrest.MessageMatchers.*;
 
-import java.awt.Color;
-
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;

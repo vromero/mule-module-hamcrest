@@ -18,9 +18,14 @@
  */
 package org.mule.module.hamcrest.message;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
+import org.hamcrest.core.AllOf;
+import org.hamcrest.core.AnyOf;
 import org.hamcrest.core.IsNull;
 import org.hamcrest.core.IsEqual;
 import org.junit.internal.matchers.TypeSafeMatcher;
@@ -79,6 +84,92 @@ public class PropertyMatcher extends TypeSafeMatcher<MuleMessage> {
 	@Factory
 	public static <T> Matcher<MuleMessage> hasProperty(PropertyScope scope, String key, Matcher<? super T> matcher) {
 		return new PropertyMatcher(scope, key, matcher);
+	}
+	
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasInboundProperty(String key) {
+		return new PropertyMatcher(PropertyScope.INBOUND, key, IsNull.notNullValue());
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasInboundProperty(String key, T value) {
+		return new PropertyMatcher(PropertyScope.INBOUND, key, IsEqual.equalTo(value));
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasInboundProperty(String key, Matcher<? super T> matcher) {
+		return new PropertyMatcher(PropertyScope.INBOUND, key, matcher);
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasOutboundProperty(String key) {
+		return new PropertyMatcher(PropertyScope.OUTBOUND, key, IsNull.notNullValue());
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasOutboundProperty(String key, T value) {
+		return new PropertyMatcher(PropertyScope.OUTBOUND, key, IsEqual.equalTo(value));
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasOutboundProperty(String key, Matcher<? super T> matcher) {
+		return new PropertyMatcher(PropertyScope.OUTBOUND, key, matcher);
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasSessionProperty(String key) {
+		return new PropertyMatcher(PropertyScope.SESSION, key, IsNull.notNullValue());
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasSessionProperty(String key, T value) {
+		return new PropertyMatcher(PropertyScope.SESSION, key, IsEqual.equalTo(value));
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasSessionProperty(String key, Matcher<? super T> matcher) {
+		return new PropertyMatcher(PropertyScope.SESSION, key, matcher);
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasInvocationProperty(String key) {
+		return new PropertyMatcher(PropertyScope.INVOCATION, key, IsNull.notNullValue());
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasInvocationProperty(String key, T value) {
+		return new PropertyMatcher(PropertyScope.INVOCATION, key, IsEqual.equalTo(value));
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasInvocationProperty(String key, Matcher<? super T> matcher) {
+		return new PropertyMatcher(PropertyScope.INVOCATION, key, matcher);
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasPropertyInAnyScope(String key) {
+		
+		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(4);
+
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INBOUND, key, IsNull.notNullValue()));
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.OUTBOUND, key, IsNull.notNullValue()));
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INVOCATION, key, IsNull.notNullValue()));
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.SESSION, key, IsNull.notNullValue()));
+		
+		return new AnyOf(allScopeMatchers);
+	}
+	
+	@Factory
+	public static <T> Matcher<MuleMessage> hasPropertyInAnyScope(String key, Matcher<? super T> matcher) {
+		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(4);
+
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INBOUND, key, matcher));
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.OUTBOUND, key, matcher));
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INVOCATION, key, matcher));
+		allScopeMatchers.add(new PropertyMatcher(PropertyScope.SESSION, key, matcher));
+		
+		return new AnyOf(allScopeMatchers);
 	}
 	
 }

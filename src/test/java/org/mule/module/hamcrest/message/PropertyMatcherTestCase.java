@@ -21,12 +21,14 @@ package org.mule.module.hamcrest.message;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mule.module.hamcrest.message.PropertyMatcher.hasProperty;
+import static org.mule.module.hamcrest.message.PropertyMatcher.*;
 
 import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
+import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
+import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.PropertyScope;
 import org.mule.tck.junit4.FunctionalTestCase;
@@ -43,39 +45,136 @@ public class PropertyMatcherTestCase extends FunctionalTestCase {
 	@Before
 	public void doSetup() throws Exception {
 		message = new DefaultMuleMessage(null, muleContext);
-    	message.setOutboundProperty("aKey", "aValue");
+		new DefaultMuleEvent(message, MessageExchangePattern.ONE_WAY, getTestService());
+		
+		message.setProperty("anInboundKey", "aValue", PropertyScope.INBOUND);
+    	message.setProperty("anOutboundKey", "aValue", PropertyScope.OUTBOUND);
+    	message.setProperty("anInvocationaKey", "aValue", PropertyScope.INVOCATION);
+    	message.setProperty("aSessionKey", "aValue", PropertyScope.SESSION);
 	}
 
+	
 	@Test
-	public void testHasOutboundPropertyValueWithMatcher() throws Exception {
+	public void testHasScopedPropertyValueWithMatcher() throws Exception {
 		assertThat(message,
-				hasProperty(PropertyScope.OUTBOUND, "aKey", is("aValue")));
+				hasProperty(PropertyScope.OUTBOUND, "anOutboundKey", is("aValue")));
 	}
 
 	@Test
-	public void testNotHasOutboundPropertyValue() throws Exception {
+	public void testNotHasScopedPropertyValue() throws Exception {
 		assertThat(
 				message,
 				not(hasProperty(PropertyScope.OUTBOUND, "AnotherKey", "aValue")));
 	}
 
 	@Test
-	public void testHasOutboundPropertyWithMatcher() throws Exception {
-		assertThat(message, hasProperty(PropertyScope.OUTBOUND, "aKey"));
+	public void testHasScopedPropertyWithMatcher() throws Exception {
+		assertThat(message, hasProperty(PropertyScope.OUTBOUND, "anOutboundKey"));
 	}
 
 	@Test
-	public void testNotHasOutboundPropertyWithMatcher() throws Exception {
+	public void testNotHasScopedPropertyWithMatcher() throws Exception {
 		assertThat(message,
 				not(hasProperty(PropertyScope.OUTBOUND, "AnotherKey")));
 	}
+	
+	
+	@Test
+	public void testHasInboundProperty() throws Exception {
+		assertThat(message, hasInboundProperty("anInboundKey"));
+	}
+	
+	@Test
+	public void testHasInboundPropertyWithMatcher() throws Exception {
+		assertThat(message, hasInboundProperty("anInboundKey", is("aValue")));
+	}
+
+	@Test
+	public void testHasInboundPropertyWithValue() throws Exception {
+		assertThat(message, hasInboundProperty("anInboundKey", "aValue"));
+	}
+	
+
+	@Test
+    public void testHasOutboundProperty() throws Exception
+    {
+    	assertThat(message, hasOutboundProperty("anOutboundKey"));
+    }
+
+	@Test
+    public void testHasOutboundPropertyWithValue() throws Exception
+    {
+    	assertThat(message, hasOutboundProperty("anOutboundKey", "aValue"));
+    }
+
+	@Test
+    public void testHasOutboundPropertyWithMatcher() throws Exception
+    {
+    	assertThat(message, hasOutboundProperty("anOutboundKey", is("aValue")));
+    }
+	
+	
+	@Test
+    public void testHasInvocationProperty() throws Exception
+    {
+    	assertThat(message, hasInvocationProperty("anInvocationaKey"));
+    }
+	
+	@Test
+    public void testHasInvocationPropertyWithValue() throws Exception
+    {
+    	assertThat(message, hasInvocationProperty("anInvocationaKey", "aValue"));
+    }
+
+	@Test
+    public void testHasInvocationPropertyWithMatcher() throws Exception
+    {
+    	assertThat(message, hasInvocationProperty("anInvocationaKey", is("aValue")));
+    }
+	
+	
+	@Test
+    public void testHasSessionPropertyWithMatcher() throws Exception
+    {
+    	assertThat(message, hasSessionProperty("aSessionKey", is("aValue")));
+    }
+	
+	@Test
+    public void testHasSessionProperty() throws Exception
+    {
+    	assertThat(message, hasSessionProperty("aSessionKey", "aValue"));
+    }
+	
+	
+	@Test
+    public void testHasAnyScopeProperty() throws Exception
+    {
+    	assertThat(message, hasPropertyInAnyScope("anOutboundKey"));
+    	assertThat(message, hasPropertyInAnyScope("anInvocationaKey"));
+    	assertThat(message, hasPropertyInAnyScope("aSessionKey"));
+    	assertThat(message, hasPropertyInAnyScope("anInboundKey"));
+    	
+    	assertThat(message, not(hasPropertyInAnyScope("iDontExist")));
+    }
+	
+	@Test
+    public void testHasAnyScopePropertyWithMatcher() throws Exception
+    {
+    	assertThat(message, hasPropertyInAnyScope("anOutboundKey", is("aValue")));
+    	assertThat(message, hasPropertyInAnyScope("anInvocationaKey", is("aValue")));
+    	assertThat(message, hasPropertyInAnyScope("aSessionKey", is("aValue")));
+    	assertThat(message, hasPropertyInAnyScope("anInboundKey", is("aValue")));
+    	
+    	assertThat(message, not(hasPropertyInAnyScope("iDontExist", is("andNeitherHaveValue"))));
+    }
+	
 	
 	@Test
     public void testDescription() throws Exception
     {
 		StringDescription description = new StringDescription();
-		new PropertyMatcher(PropertyScope.OUTBOUND, "key", is("value")).describeTo(description);
-	    assertThat(description.toString(), is("a MuleMessage with a property with key \"key\" in scope <outbound> is \"value\""));
+		new PropertyMatcher(PropertyScope.OUTBOUND, "anOutboundKey", is("anOutboundKeyValue")).describeTo(description);
+	    assertThat(description.toString(), is("a MuleMessage with a property with key \"anOutboundKey\" in scope <outbound> is \"anOutboundKeyValue\""));
     }
-
+	
 }

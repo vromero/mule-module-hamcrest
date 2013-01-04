@@ -18,20 +18,23 @@
  */
 package org.mule.module.hamcrest.message;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mule.module.hamcrest.message.InboundPropertyMatcher.hasInboundProperty;
+import static org.mule.module.hamcrest.message.SameExternalValuesMatcher.hasSameExternalValuesThan;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
-import org.mule.api.transport.PropertyScope;
 import org.mule.tck.junit4.FunctionalTestCase;
 
-public class InboundPropertyMatcherTestCase extends FunctionalTestCase {
+public class SameExternalValuesMatcherTestCase extends FunctionalTestCase {
 
-	private MuleMessage message;
+	private MuleMessage messageA;
+	
+	private MuleMessage messageB;
+	
+	private MuleMessage messageC;
 	
 	@Override
 	protected String getConfigResources() {
@@ -40,23 +43,39 @@ public class InboundPropertyMatcherTestCase extends FunctionalTestCase {
 	
 	@Before
 	public void doSetup() throws Exception {
-		message = new DefaultMuleMessage(null, muleContext);
-		message.setProperty("aKey", "aValue", PropertyScope.INBOUND);
+		messageA = new DefaultMuleMessage(null, muleContext);
+    	messageA.setOutboundProperty("aKey", "aValue");
+    	
+    	messageB = new DefaultMuleMessage(null, muleContext);
+    	messageB.setOutboundProperty("aKey", "aValue");
+    	
+    	messageC = new DefaultMuleMessage(null, muleContext);
+    	messageC.setOutboundProperty("weird", "value");
+    	
 	}
 	
 	@Test
-	public void testHasInboundProperty() throws Exception {
-		assertThat(message, hasInboundProperty("aKey"));
+	public void testHasOutboundPropertyWithValue() throws Exception {
+		assertThat(messageA,
+				hasSameExternalValuesThan(messageB));
 	}
 	
 	@Test
-	public void testHasInboundPropertyWithMatcher() throws Exception {
-		assertThat(message, hasInboundProperty("aKey", is("aValue")));
+	public void testNotHasOutboundPropertyWithValue() throws Exception {
+		assertThat(messageA,
+				not(hasSameExternalValuesThan(messageC)));
 	}
-
+	
 	@Test
-	public void testHasInboundPropertyWithValue() throws Exception {
-		assertThat(message, hasInboundProperty("aKey", "aValue"));
+	public void testhasSamePropertiesThanInAllScopes() throws Exception {
+		assertThat(messageA,
+				hasSameExternalValuesThan(messageB));
+	}
+	
+	@Test
+	public void testNotHasSamePropertiesThanInAllScopes() throws Exception {
+		assertThat(messageA,
+				not(hasSameExternalValuesThan(messageC)));
 	}
 	
 }

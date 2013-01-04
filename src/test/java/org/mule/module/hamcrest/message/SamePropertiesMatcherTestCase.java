@@ -18,23 +18,24 @@
  */
 package org.mule.module.hamcrest.message;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mule.module.hamcrest.message.InvocationPropertyMatcher.hasInvocationProperty;
+import static org.mule.module.hamcrest.message.SamePropertiesMatcher.hasSamePropertiesThan;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
-import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.PropertyScope;
 import org.mule.tck.junit4.FunctionalTestCase;
 
-public class InvocationPropertyMatcherTestCase extends FunctionalTestCase
-{
+public class SamePropertiesMatcherTestCase extends FunctionalTestCase {
+
+	private MuleMessage messageA;
 	
-	private MuleMessage message;
+	private MuleMessage messageB;
+	
+	private MuleMessage messageC;
 	
 	@Override
 	protected String getConfigResources() {
@@ -43,27 +44,39 @@ public class InvocationPropertyMatcherTestCase extends FunctionalTestCase
 	
 	@Before
 	public void doSetup() throws Exception {
-		message = new DefaultMuleMessage(null, muleContext);
-    	new DefaultMuleEvent(message, MessageExchangePattern.ONE_WAY, getTestService());
-		message.setProperty("aKey", "aValue", PropertyScope.INVOCATION);
+		messageA = new DefaultMuleMessage(null, muleContext);
+    	messageA.setOutboundProperty("aKey", "aValue");
+    	
+    	messageB = new DefaultMuleMessage(null, muleContext);
+    	messageB.setOutboundProperty("aKey", "aValue");
+    	
+    	messageC = new DefaultMuleMessage(null, muleContext);
+    	messageC.setOutboundProperty("weird", "value");
+    	
 	}
 	
 	@Test
-    public void testHasInvocationProperty() throws Exception
-    {
-    	assertThat(message, hasInvocationProperty("aKey"));
-    }
+	public void testHasOutboundPropertyWithValue() throws Exception {
+		assertThat(messageA,
+				hasSamePropertiesThan(PropertyScope.OUTBOUND, messageB));
+	}
 	
 	@Test
-    public void testHasInvocationPropertyWithValue() throws Exception
-    {
-    	assertThat(message, hasInvocationProperty("aKey", "aValue"));
-    }
-
+	public void testNotHasOutboundPropertyWithValue() throws Exception {
+		assertThat(messageA,
+				not(hasSamePropertiesThan(PropertyScope.OUTBOUND, messageC)));
+	}
+	
 	@Test
-    public void testHasInvocationPropertyWithMatcher() throws Exception
-    {
-    	assertThat(message, hasInvocationProperty("aKey", is("aValue")));
-    }
+	public void testhasSamePropertiesThanInAllScopes() throws Exception {
+		assertThat(messageA,
+				hasSamePropertiesThan(messageB));
+	}
+	
+	@Test
+	public void testNotHasSamePropertiesThanInAllScopes() throws Exception {
+		assertThat(messageA,
+				not(hasSamePropertiesThan(messageC)));
+	}
 	
 }

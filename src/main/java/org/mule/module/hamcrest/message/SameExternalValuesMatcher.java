@@ -18,24 +18,25 @@
  */
 package org.mule.module.hamcrest.message;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
-import org.hamcrest.core.IsNull;
+import org.hamcrest.core.AllOf;
 import org.junit.internal.matchers.TypeSafeMatcher;
 import org.mule.api.MuleMessage;
-import org.mule.api.transport.PropertyScope;
 
-public class SessionPropertyMatcher extends TypeSafeMatcher<MuleMessage> {
+public class SameExternalValuesMatcher extends TypeSafeMatcher<MuleMessage> {
 
 	private final Matcher<?> matcher;
 	
-	SessionPropertyMatcher(Matcher<?> matcher) {
+	SameExternalValuesMatcher(Matcher<?> matcher) {
 		super();
 		this.matcher = matcher;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -43,7 +44,7 @@ public class SessionPropertyMatcher extends TypeSafeMatcher<MuleMessage> {
 	public boolean matchesSafely(MuleMessage message) {
 		return matcher.matches(message);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -51,19 +52,18 @@ public class SessionPropertyMatcher extends TypeSafeMatcher<MuleMessage> {
 		description.appendDescriptionOf(matcher);
 	}
 
-	@Factory
-	public static <T> Matcher<MuleMessage> hasSessionProperty(String key) {
-		return new PropertyMatcher(PropertyScope.SESSION, key,IsNull.notNullValue());
-	}
 	
 	@Factory
-	public static <T> Matcher<MuleMessage> hasSessionProperty(String key, T value) {
-		return new PropertyMatcher(PropertyScope.SESSION, key, IsEqual.equalTo(value));
-	}
-	
-	@Factory
-	public static <T> Matcher<MuleMessage> hasSessionProperty(String key, Matcher<? super T> matcher) {
-		return new PropertyMatcher(PropertyScope.SESSION, key, matcher);
+	public static <T> Matcher<MuleMessage> hasSameExternalValuesThan(MuleMessage message) {
+		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(3);
+		
+		Object payload = message != null ? message.getPayload() : null;
+		
+		allScopeMatchers.add(SamePropertiesMatcher.hasSamePropertiesThan(message));
+		allScopeMatchers.add(SameAttachmentsMatcher.hasSameAttachmentsThan(message));
+		allScopeMatchers.add(PayloadMatcher.hasPayload(payload));
+		
+		return new AllOf(allScopeMatchers);
 	}
 	
 }

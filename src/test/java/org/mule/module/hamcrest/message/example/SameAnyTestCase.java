@@ -16,25 +16,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package org.mule.module.hamcrest.message;
+package org.mule.module.hamcrest.message.example;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.mule.module.hamcrest.MessageMatchers.*;
+
 import static org.junit.Assert.assertThat;
-import static org.mule.module.hamcrest.message.SessionPropertyMatcher.hasSessionProperty;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
-import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;
-import org.mule.api.transport.PropertyScope;
 import org.mule.tck.junit4.FunctionalTestCase;
 
-public class SessionPropertyMatcherTestCase extends FunctionalTestCase
+public class SameAnyTestCase extends FunctionalTestCase
 {
 	
-	private MuleMessage message;
+	private MuleMessage messageA;
+	
+	private MuleMessage messageB;
+	
+	private MuleMessage messageC;
 	
 	@Override
 	protected String getConfigResources() {
@@ -43,21 +44,27 @@ public class SessionPropertyMatcherTestCase extends FunctionalTestCase
 	
 	@Before
 	public void doSetup() throws Exception {
-		message = new DefaultMuleMessage(null, muleContext);
-    	new DefaultMuleEvent(message, MessageExchangePattern.ONE_WAY, getTestService());
-    	message.setProperty("aKey", "aValue", PropertyScope.SESSION);
+		messageA = new DefaultMuleMessage(null, muleContext);
+    	messageA.setOutboundProperty("aKey", "aValue");
+    	
+    	messageB = new DefaultMuleMessage(null, muleContext);
+    	messageB.setOutboundProperty("aKey", "aValue");
+    	
+    	messageC = new DefaultMuleMessage(null, muleContext);
+    	messageC.setOutboundProperty("weird", "value");
 	}
 	
 	@Test
-    public void testHasSessionPropertyWithMatcher() throws Exception
+    public void testPropertiesExamples() throws Exception
     {
-    	assertThat(message, hasSessionProperty("aKey", is("aValue")));
-    }
-	
-	@Test
-    public void testHasSessionProperty() throws Exception
-    {
-    	assertThat(message, hasSessionProperty("aKey", "aValue"));
+		// Checks that messageA have the same outbound properties than messageB
+		assertThat(messageA, hasSameOutboundPropertiesThan(messageB));
+		
+		// Checks that messageA have the same outbound properties than messageB
+		assertThat(messageA, hasSameAttachmentsThan(messageB));
+		
+		// Checks that messageA have the same properties, attachments and payload than messageB
+		assertThat(messageA, hasSameExternalValuesThan(messageB));
     }
 	
 }

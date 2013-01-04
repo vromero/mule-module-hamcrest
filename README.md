@@ -7,6 +7,7 @@ This module provides a library of specialized [Hamcrest](http://code.google.com/
 ## Hamcrest Resources
 * [Official site](http://code.google.com/p/hamcrest/).
 * [Official tutorial](http://code.google.com/p/hamcrest/wiki/Tutorial).
+* [Hamcrest usage](http://edgibbs.com/junit-4-with-hamcrest/) examples.
 * [Tutorial](http://www.planetgeek.ch/2012/03/07/create-your-own-matcher/) for custom matchers.
 
 # Installation
@@ -35,6 +36,21 @@ Add the module as a dependency to your project. This can be done by adding the f
 # Examples
 
 ## MuleMessage
+
+### Comparisons
+```java
+import static org.hamcrest.Matchers.*;
+import static org.mule.module.hamcrest.MessageMatchers.*;
+
+// Checks that messageA have the same outbound properties than messageB
+assertThat(messageA, hasSameOutboundPropertiesThan(messageB));
+		
+// Checks that messageA have the same outbound properties than messageB
+assertThat(messageA, hasSameAttachmentsThan(messageB));
+		
+// Checks that messageA have the same properties, attachments and payload than messageB
+assertThat(messageA, hasSameExternalValuesThan(messageB));
+```
 
 ### Properties and Variables
 ```java
@@ -109,6 +125,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mule.module.hamcrest.MessageMatchers.*;
 
 // more stuff here
+
 // Checks that the message has a non null exception payload
 assertThat(message, not(hasExceptionPayload()));
 
