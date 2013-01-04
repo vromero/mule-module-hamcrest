@@ -1,5 +1,5 @@
 
-This module provides a library of specialized [Hamcrest](http://code.google.com/p/hamcrest/) matchers to match rules against MuleMessages, MuleEvents and others.
+This module provides a library of specialized [Hamcrest](http://code.google.com/p/hamcrest/) matchers to match rules against MuleMessages.
 
 # Hamcrest
 > [Hamcrest](http://code.google.com/p/hamcrest/) is a framework for writing matcher objects allowing 'match' rules to be defined declaratively. There are a number of situations where matchers are invaluble, such as UI validation, or data filtering, but it is in the area of writing flexible tests that matchers are most commonly used.
@@ -90,6 +90,8 @@ assertThat(message, hasOutboundAttachment("anOutboundAttachment", is(not(instanc
 import static org.hamcrest.Matchers.*;
 import static org.mule.module.hamcrest.MessageMatchers.*;
 
+// more stuff here
+
 // Checks that the message has a non null payload
 assertThat(message, hasPayload());
 
@@ -102,5 +104,16 @@ assertThat(message, hasPayload(is(sameInstance(Color.BLUE))));
 
 ### ExceptionPayload
 
+```java
+import static org.hamcrest.Matchers.*;
+import static org.mule.module.hamcrest.MessageMatchers.*;
 
-## MuleEvent
+// more stuff here
+// Checks that the message has a non null exception payload
+assertThat(message, not(hasExceptionPayload()));
+
+// Checks that the message don't have an exception payload containing "FATAL"
+assertThat(message, not(hasExceptionPayload(containsString("FATAL"))));
+```
+
+
