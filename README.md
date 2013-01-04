@@ -35,6 +35,31 @@ Add the module as a dependency to your project. This can be done by adding the f
 ## MuleMessage
 
 ### Properties and Variables
+```java
+// Check if the property "aPropertyKey" exists in any scope
+assertThat(message, hasPropertyInAnyScope("aPropertyKey"));
+
+// Find the property "aPropertyKey" in any scope with value "aValue" 
+assertThat(message, hasPropertyInAnyScope("aPropertyKey", is("aValue")));
+
+// Find the property "aPropertyKey" in any scope with a non case sensitive value of "aValue" 
+assertThat(message, hasPropertyInAnyScope("aPropertyKey", equalToIgnoringCase("aValue")));
+
+// Check if the inbound property "aPropertyKey" exists
+assertThat(message, hasInboundProperty("anInboundKey"));
+
+// Check if the inbound property "aPropertyKey" exists
+assertThat(message, hasInboundProperty("anInboundKey", equalToIgnoringWhiteSpace("this   is   a   Value")));
+
+// Check if the outbound property "anOutboundKey" contains the value "is"
+assertThat(message, hasOutboundProperty("anOutboundKey", containsString("is")));
+
+// Check if the session property "aSessionKey" is greater than 2
+assertThat(message, hasSessionProperty("aSessionKey", greaterThan(2)));
+
+// Check if the invocation property "anInvocationaKey" is an instance of String
+assertThat(message, hasInvocationProperty("anInvocationaKey", is(instanceOf(String.class))));
+```
 
 ### Attachments
 
