@@ -18,7 +18,7 @@
  */
 package org.mule.module.hamcrest.message.example;
 
-import static org.mule.module.hamcrest.MessageMatchers.*;
+import static org.mule.module.hamcrest.message.MessageMatchers.*;
 
 import static org.junit.Assert.assertThat;
 

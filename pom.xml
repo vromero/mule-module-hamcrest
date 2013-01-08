@@ -160,7 +160,7 @@
 							<arguments>
 								<argument>src/main/resources/generator-config.xml</argument>
 								<argument>src/main/java</argument>
-								<argument>org.mule.module.hamcrest.MessageMatchers</argument>
+								<argument>org.mule.module.hamcrest.message.MessageMatchers</argument>
 								<argument>${project.build.directory}/generated-sources/hamcrest/java</argument>
 							</arguments>
 

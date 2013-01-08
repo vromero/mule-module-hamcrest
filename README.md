@@ -23,13 +23,77 @@ Add the expresion evaluator's maven repo to your pom.xml:
 	    </repository>
 	</repositories>
 
-Add the module as a dependency to your project. This can be done by adding the following under the dependencies element in the pom.xml file of the application:
+Add the module as a dependency to your project. This can be done by adding the following at the top of the dependencies element in the pom.xml file of the application:
 
 	<dependency>
 	    <groupId>org.mule.modules</groupId>
 	    <artifactId>mule-module-hamcrest</artifactId>
 	    <version>1.0-SNAPSHOT</version>
+		<scope>test</scope>
 	</dependency>
+	
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit-dep</artifactId>
+		<version>4.9</version>
+		<scope>test</scope>
+		<exclusions>
+			<exclusion>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	
+Exclude any transient dependency to junit (junit have a dependency to the legacy hamcrest version 1.1), by excluding the junit dependency of mule-core and  mule-test-functional.
+
+	<dependency>
+		<groupId>org.mule</groupId>
+		<artifactId>mule-core</artifactId>
+		<version>${mule.version}</version>
+		<exclusions>
+			<exclusion>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+
+	<dependency>
+		<groupId>org.mule.tests</groupId>
+		<artifactId>mule-tests-functional</artifactId>
+		<version>${mule.version}</version>
+		<exclusions>
+			<exclusion>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+
+Using this plugin we can make sure we are not using any old hamcrest version:
+
+	<plugin>
+		<artifactId>maven-enforcer-plugin</artifactId>
+		<version>1.0.1</version>
+		<executions>
+			<execution>
+				<id>only-junit-dep-is-used</id>
+				<goals>
+					<goal>enforce</goal>
+				</goals>
+				<configuration>
+					<rules>
+						<bannedDependencies>
+							<excludes>
+								<exclude>junit:junit</exclude>
+							</excludes>
+						</bannedDependencies>
+					</rules>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
 
 # Usage
 
@@ -40,7 +104,9 @@ Add the module as a dependency to your project. This can be done by adding the f
 ### Comparisons
 ```java
 import static org.hamcrest.Matchers.*;
-import static org.mule.module.hamcrest.MessageMatchers.*;
+import static org.mule.module.hamcrest.message.MessageMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 
 // Checks that messageA have the same outbound properties than messageB
 assertThat(messageA, hasSameOutboundPropertiesThan(messageB));
@@ -55,7 +121,8 @@ assertThat(messageA, hasSameExternalValuesThan(messageB));
 ### Properties and Variables
 ```java
 import static org.hamcrest.Matchers.*;
-import static org.mule.module.hamcrest.MessageMatchers.*;
+import static org.mule.module.hamcrest.message.MessageMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 // more stuff here
 
@@ -87,7 +154,8 @@ assertThat(message, hasInvocationProperty("anInvocationaKey", is(instanceOf(Stri
 ### Attachments
 ```java
 import static org.hamcrest.Matchers.*;
-import static org.mule.module.hamcrest.MessageMatchers.*;
+import static org.mule.module.hamcrest.message.MessageMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 // more stuff here
 
@@ -104,7 +172,8 @@ assertThat(message, hasOutboundAttachment("anOutboundAttachment", is(not(instanc
 ### Payload
 ```java
 import static org.hamcrest.Matchers.*;
-import static org.mule.module.hamcrest.MessageMatchers.*;
+import static org.mule.module.hamcrest.message.MessageMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 // more stuff here
 
@@ -122,7 +191,8 @@ assertThat(message, hasPayload(is(sameInstance(Color.BLUE))));
 
 ```java
 import static org.hamcrest.Matchers.*;
-import static org.mule.module.hamcrest.MessageMatchers.*;
+import static org.mule.module.hamcrest.message.MessageMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 // more stuff here
 
