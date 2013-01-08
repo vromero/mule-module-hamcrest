@@ -20,10 +20,9 @@ package org.mule.module.hamcrest.message;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.module.hamcrest.message.PropertyMatcher.*;
 
-import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.DefaultMuleEvent;
@@ -170,11 +169,11 @@ public class PropertyMatcherTestCase extends FunctionalTestCase {
 	
 	
 	@Test
-    public void testDescription() throws Exception
+    public void testDescriptionAndMismatch() throws Exception
     {
-		StringDescription description = new StringDescription();
-		new PropertyMatcher(PropertyScope.OUTBOUND, "anOutboundKey", is("anOutboundKeyValue")).describeTo(description);
-	    assertThat(description.toString(), is("a MuleMessage with a property with key \"anOutboundKey\" in scope <outbound> is \"anOutboundKeyValue\""));
+		PropertyMatcher p = new PropertyMatcher(PropertyScope.OUTBOUND, "anOutboundKey", is("anOutboundKeyValue"));
+		DescriptionAssertor.assertDescription("a MuleMessage which property with key \"anOutboundKey\" in scope <outbound> is \"anOutboundKeyValue\"", p);
+		DescriptionAssertor.assertMismatchDescription("was a MuleMessage which property with key \"anOutboundKey\" in scope <outbound> has the value \"aValue\"", p, message);
     }
 	
 }

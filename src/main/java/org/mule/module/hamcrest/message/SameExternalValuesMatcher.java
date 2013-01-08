@@ -55,7 +55,7 @@ public class SameExternalValuesMatcher extends TypeSafeMatcher<MuleMessage> {
 	
 	@Factory
 	public static <T> Matcher<MuleMessage> hasSameExternalValuesThan(MuleMessage message) {
-		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(3);
+		List<Matcher<? super MuleMessage>> allScopeMatchers = new ArrayList<Matcher<? super MuleMessage>>(3);
 		
 		Object payload = message != null ? message.getPayload() : null;
 		
@@ -63,7 +63,7 @@ public class SameExternalValuesMatcher extends TypeSafeMatcher<MuleMessage> {
 		allScopeMatchers.add(SameAttachmentsMatcher.hasSameAttachmentsThan(message));
 		allScopeMatchers.add(PayloadMatcher.hasPayload(payload));
 		
-		return new AllOf(allScopeMatchers);
+		return new AllOf<MuleMessage>(allScopeMatchers);
 	}
 	
 }

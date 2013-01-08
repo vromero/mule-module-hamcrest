@@ -18,11 +18,10 @@
  */
 package org.mule.module.hamcrest.message;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mule.module.hamcrest.message.OutboundAttachmentMatcher.hasOutboundAttachment;
+import static org.mule.module.hamcrest.message.AttachmentMatcher.*;
 
-import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.DefaultMuleMessage;
@@ -30,7 +29,7 @@ import org.mule.api.MuleMessage;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.tck.testmodels.fruit.Banana;
 
-public class OutboundAttachmentMatcherTestCase extends FunctionalTestCase
+public class AttachmentMatcherTestCase extends FunctionalTestCase
 {
 	
 	private Banana banana;
@@ -41,6 +40,8 @@ public class OutboundAttachmentMatcherTestCase extends FunctionalTestCase
 	public void doSetup() throws Exception {
 		message = new DefaultMuleMessage(null, muleContext);
 		banana = new Banana();
+    	message.addOutboundAttachment("anAttachment", banana, "application/vnd.mule.banana");
+    	message = message.createInboundMessage();
     	message.addOutboundAttachment("anOutboundAttachment", banana, "application/vnd.mule.banana");
 	}
 	
@@ -48,6 +49,24 @@ public class OutboundAttachmentMatcherTestCase extends FunctionalTestCase
 	protected String getConfigResources() {
 		return "hamcrest-functional-test-config.xml";
 	}
+	
+	@Test
+    public void testHasInboundProperty() throws Exception
+    {
+    	assertThat(message, hasInboundAttachment("anAttachment"));
+    }
+	
+	@Test
+    public void testHasInboundPropertyWithMatcher() throws Exception
+    {
+    	assertThat(message, hasInboundAttachment("anAttachment", is(banana)));
+    }
+	
+	@Test
+    public void testHasInboundPropertyWithValue() throws Exception
+    {
+    	assertThat(message, hasInboundAttachment("anAttachment"));
+    }
 	
 	@Test
     public void testHasOutboundProperty() throws Exception
@@ -68,11 +87,11 @@ public class OutboundAttachmentMatcherTestCase extends FunctionalTestCase
     }
 	
 	@Test
-    public void testDescription() throws Exception
+    public void testDescriptionAndMismatch() throws Exception
     {
-		StringDescription description = new StringDescription();
-		new OutboundAttachmentMatcher("key", is("value")).describeTo(description);
-	    assertThat(description.toString(), is("a MuleMessage with an outbound attachment with key \"key\" and value is \"value\""));
+		AttachmentMatcher p = new AttachmentMatcher("aNonExistentAttachment", not(nullValue()));
+		DescriptionAssertor.assertDescription("a MuleMessage with an inbound attachment in scope <INBOUND> with key \"aNonExistentAttachment\" and value not null", p);
+		DescriptionAssertor.assertMismatchDescription("was a MuleMessage with an attachment in scope <INBOUND> with key \"aNonExistentAttachment\" and value null", p, message);
     }
 	
 }

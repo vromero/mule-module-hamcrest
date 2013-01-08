@@ -26,8 +26,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
-import org.hamcrest.core.IsNull;
-import org.hamcrest.core.IsEqual;
 import org.junit.internal.matchers.TypeSafeMatcher;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.PropertyScope;
@@ -109,14 +107,14 @@ public class SamePropertiesMatcher extends TypeSafeMatcher<MuleMessage> {
 	
 	@Factory
 	public static <T> Matcher<MuleMessage> hasSamePropertiesThan(MuleMessage message) {
-		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(4);
+		List<Matcher<? super MuleMessage>> allScopeMatchers = new ArrayList<Matcher<? super MuleMessage>>(4);
 		
 		allScopeMatchers.add(new SamePropertiesMatcher(PropertyScope.INBOUND, message));
 		allScopeMatchers.add(new SamePropertiesMatcher(PropertyScope.OUTBOUND, message));
 		allScopeMatchers.add(new SamePropertiesMatcher(PropertyScope.INVOCATION, message));
 		allScopeMatchers.add(new SamePropertiesMatcher(PropertyScope.SESSION, message));
 		
-		return new AllOf(allScopeMatchers);
+		return new AllOf<MuleMessage>(allScopeMatchers);
 	}
 	
 }

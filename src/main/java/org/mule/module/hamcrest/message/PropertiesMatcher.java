@@ -18,16 +18,18 @@
  */
 package org.mule.module.hamcrest.message;
 
-import static org.hamcrest.collection.IsCollectionContaining.hasItem;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
+
+import java.util.Set;
 
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
-import org.junit.internal.matchers.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.PropertyScope;
 
-public class PropertiesMatcher extends TypeSafeMatcher<MuleMessage> {
+public class PropertiesMatcher extends TypeSafeDiagnosingMatcher<MuleMessage> {
 
 	private final Matcher<?> matcher;
 	
@@ -39,12 +41,17 @@ public class PropertiesMatcher extends TypeSafeMatcher<MuleMessage> {
 		this.matcher = matcher;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public boolean matchesSafely(MuleMessage message) {
-		return matcher.matches(message.getPropertyNames(scope));
+	protected boolean matchesSafely(MuleMessage message, Description mismatchDescription) {
+		Set<String> names = message.getPropertyNames(scope);
+		boolean matches = matcher.matches(names);
+		
+		mismatchDescription.appendText(" was a MuleMessage with property names for scope ")
+		 .appendValue(scope)
+		 .appendText(" ")
+		 .appendValue(names);
+		
+		return matches;
 	}
 
 	/**

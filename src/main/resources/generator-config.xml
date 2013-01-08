@@ -1,8 +1,7 @@
 <matchers>
 
+  <factory class="org.mule.module.hamcrest.message.AttachmentMatcher"/>
   <factory class="org.mule.module.hamcrest.message.ExceptionPayloadMatcher"/>
-  <factory class="org.mule.module.hamcrest.message.InboundAttachmentMatcher"/>
-  <factory class="org.mule.module.hamcrest.message.OutboundAttachmentMatcher"/>
   <factory class="org.mule.module.hamcrest.message.PayloadMatcher"/>
   <factory class="org.mule.module.hamcrest.message.PropertiesMatcher"/>
   <factory class="org.mule.module.hamcrest.message.PropertyMatcher"/>

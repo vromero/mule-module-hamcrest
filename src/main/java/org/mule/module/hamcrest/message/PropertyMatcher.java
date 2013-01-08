@@ -24,25 +24,20 @@ import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
-import org.hamcrest.core.AllOf;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.core.AnyOf;
-import org.hamcrest.core.IsNull;
 import org.hamcrest.core.IsEqual;
-import org.junit.internal.matchers.TypeSafeMatcher;
+import org.hamcrest.core.IsNull;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.PropertyScope;
 
-public class PropertyMatcher extends TypeSafeMatcher<MuleMessage> {
+public class PropertyMatcher extends TypeSafeDiagnosingMatcher<MuleMessage> {
 
 	private final Matcher<?> matcher;
 	
 	private final String key;
 	
 	private final PropertyScope scope;
-	
-	PropertyMatcher(PropertyScope scope, String key, Object value) {
-		this(scope, key, IsEqual.equalTo(value));
-	}
 	
 	PropertyMatcher(PropertyScope scope, String key, Matcher<?> matcher) {
 		super();
@@ -51,19 +46,22 @@ public class PropertyMatcher extends TypeSafeMatcher<MuleMessage> {
 		this.matcher = matcher;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public boolean matchesSafely(MuleMessage message) {
-		return matcher.matches(message.getProperty(key, scope));
+	protected boolean matchesSafely(MuleMessage message, Description mismatchDescription) {
+		boolean matches = matcher.matches(message.getProperty(key, scope));
+		
+		mismatchDescription.appendText(" was a MuleMessage which property with key ")
+		 .appendValue(key)
+		 .appendText(" in scope ")
+		 .appendValue(scope)
+		 .appendText(" has the value ")
+		 .appendValue(message.getProperty(key, scope));
+		
+		return matches;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void describeTo(Description description) {
-		description.appendText("a MuleMessage with a property with key ")
+		description.appendText("a MuleMessage which property with key ")
 		.appendValue(key)
 		.appendText(" in scope ")
 		.appendValue(scope)
@@ -150,26 +148,26 @@ public class PropertyMatcher extends TypeSafeMatcher<MuleMessage> {
 	@Factory
 	public static <T> Matcher<MuleMessage> hasPropertyInAnyScope(String key) {
 		
-		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(4);
+		List<Matcher<? super MuleMessage>> allScopeMatchers = new ArrayList<Matcher<? super MuleMessage>>(4);
 
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INBOUND, key, IsNull.notNullValue()));
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.OUTBOUND, key, IsNull.notNullValue()));
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INVOCATION, key, IsNull.notNullValue()));
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.SESSION, key, IsNull.notNullValue()));
 		
-		return new AnyOf(allScopeMatchers);
+		return new AnyOf<MuleMessage>(allScopeMatchers);
 	}
 	
 	@Factory
 	public static <T> Matcher<MuleMessage> hasPropertyInAnyScope(String key, Matcher<? super T> matcher) {
-		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(4);
+		List<Matcher<? super MuleMessage>> allScopeMatchers = new ArrayList<Matcher<? super MuleMessage>>(4);
 
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INBOUND, key, matcher));
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.OUTBOUND, key, matcher));
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.INVOCATION, key, matcher));
 		allScopeMatchers.add(new PropertyMatcher(PropertyScope.SESSION, key, matcher));
 		
-		return new AnyOf(allScopeMatchers);
+		return new AnyOf<MuleMessage>(allScopeMatchers);
 	}
 	
 }

@@ -70,4 +70,12 @@ public class PayloadMatcherTestCase extends FunctionalTestCase
     	assertThat(message, hasPayload(is(not("aDifferentValue"))));
     }
 	
+	@Test
+    public void testDescriptionAndMismatch() throws Exception
+    {
+		PayloadMatcher<?> p = new PayloadMatcher<Object>(nullValue());
+		DescriptionAssertor.assertDescription("a MuleMessage with a payload null", p);
+		DescriptionAssertor.assertMismatchDescription("was a MuleMessage with a payload \"aValue\"", p, message);
+    }
+	
 }

@@ -18,12 +18,10 @@
  */
 package org.mule.module.hamcrest.message;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.hamcrest.message.PropertiesMatcher.hasProperties;
 
-import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.DefaultMuleMessage;
@@ -59,11 +57,11 @@ public class PropertiesMatcherTestCase extends FunctionalTestCase {
 	}
 
 	@Test
-    public void testDescription() throws Exception
+    public void testDescriptionAndMismatch() throws Exception
     {
-		StringDescription description = new StringDescription();
-		new PropertiesMatcher(PropertyScope.OUTBOUND, hasItem("aKey")).describeTo(description);
-	    assertThat(description.toString(), is("a MuleMessage with property names for scope <outbound> a collection containing \"aKey\""));
+		PropertiesMatcher p = new PropertiesMatcher(PropertyScope.OUTBOUND, hasItem("anotherKey"));
+		DescriptionAssertor.assertDescription("a MuleMessage with property names for scope <outbound> a collection containing \"anotherKey\"", p);
+		DescriptionAssertor.assertMismatchDescription("was a MuleMessage with property names for scope <outbound> <[aKey]>", p, message);
     }
 	
 }

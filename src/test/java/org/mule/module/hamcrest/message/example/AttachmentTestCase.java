@@ -20,7 +20,6 @@ package org.mule.module.hamcrest.message.example;
 
 import static org.hamcrest.Matchers.*;
 import static org.mule.module.hamcrest.MessageMatchers.*;
-import static org.mule.module.hamcrest.message.InboundAttachmentMatcher.hasInboundAttachment;
 
 import static org.junit.Assert.assertThat;
 

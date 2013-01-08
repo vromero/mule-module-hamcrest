@@ -44,9 +44,6 @@ public class SameAttachmentsMatcher extends TypeSafeMatcher<MuleMessage> {
 		this.value = value;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean matchesSafely(MuleMessage message) {
 		Set<String> propertyNames = compareAttachmentNames(value, message, scope);
@@ -115,12 +112,12 @@ public class SameAttachmentsMatcher extends TypeSafeMatcher<MuleMessage> {
 
 	@Factory
 	public static <T> Matcher<MuleMessage> hasSameAttachmentsThan(MuleMessage message) {
-		List<Matcher<MuleMessage>> allScopeMatchers = new ArrayList<Matcher<MuleMessage>>(2);
+		List<Matcher<? super MuleMessage>> allScopeMatchers = new ArrayList<Matcher<? super MuleMessage>>(2);
 		
 		allScopeMatchers.add(new SameAttachmentsMatcher(AttachmentScope.INBOUND, message));
 		allScopeMatchers.add(new SameAttachmentsMatcher(AttachmentScope.OUTBOUND, message));
 		
-		return new AllOf(allScopeMatchers);
+		return new AllOf<MuleMessage>(allScopeMatchers);
 	}
 	
 }

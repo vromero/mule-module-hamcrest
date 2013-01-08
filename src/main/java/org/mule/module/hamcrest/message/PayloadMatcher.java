@@ -18,15 +18,16 @@
  */
 package org.mule.module.hamcrest.message;
 
+
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
-import org.junit.internal.matchers.TypeSafeMatcher;
 import org.mule.api.MuleMessage;
 
-public class PayloadMatcher<T> extends TypeSafeMatcher<MuleMessage> {
+public class PayloadMatcher<T> extends TypeSafeDiagnosingMatcher<MuleMessage> {
 
 	private final Matcher<? super T> matcher;
 	
@@ -35,19 +36,20 @@ public class PayloadMatcher<T> extends TypeSafeMatcher<MuleMessage> {
 		this.matcher = matcher;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public boolean matchesSafely(MuleMessage message) {
-		return matcher.matches(message.getPayload());
+	protected boolean matchesSafely(MuleMessage message, Description mismatchDescription) {
+		Object payload = message.getPayload();
+		boolean matches = matcher.matches(payload);
+		
+		mismatchDescription.appendText(" was a MuleMessage with a payload ")
+		 .appendValue(payload);
+		
+		return matches;
+		
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void describeTo(Description description) {
-		description.appendText("a MuleMessage with a payload: ").appendDescriptionOf(matcher);
+		description.appendText("a MuleMessage with a payload ").appendDescriptionOf(matcher);
 	}
 
 	@Factory

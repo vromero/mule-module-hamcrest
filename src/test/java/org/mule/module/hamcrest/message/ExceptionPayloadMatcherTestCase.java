@@ -23,7 +23,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.hamcrest.message.ExceptionPayloadMatcher.hasExceptionPayload;
 
-import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.DefaultMuleEvent;
@@ -74,11 +73,12 @@ public class ExceptionPayloadMatcherTestCase extends FunctionalTestCase
     }
 	
 	@Test
-    public void testDescription() throws Exception
+    public void testDescriptionAndMismatch() throws Exception
     {
-		StringDescription description = new StringDescription();
-		new ExceptionPayloadMatcher<String>(is("payload")).describeTo(description);
-	    assertThat(description.toString(), is("a MuleMessage with a exception payload is \"payload\""));
+		ExceptionPayloadMatcher<?> p = new ExceptionPayloadMatcher<String>(is("payload"));
+		DescriptionAssertor.assertDescription("a MuleMessage with an exception payload is \"payload\"", p);
+		DescriptionAssertor.assertMismatchDescription("was a MuleMessage with an exception payload null", p, message);
     }
+	
 	
 }
